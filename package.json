@@ -1,0 +1,62 @@
+{
+  "name": "reposeance",
+  "version": "1.0.0",
+  "description": "An open-source, local-first AI codebase archaeologist. Talk to the ghosts of your codebase.",
+  "type": "module",
+  "bin": {
+    "reposeance": "./dist/cli/program.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "prepublishOnly": "pnpm run build"
+  },
+  "keywords": [
+    "typescript",
+    "nodejs",
+    "cli",
+    "ollama",
+    "gemma",
+    "local-ai",
+    "rag",
+    "code-analysis",
+    "git",
+    "open-source"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.16.1",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@12.16.1",
+  "dependencies": {
+    "@clack/prompts": "^1.8.1",
+    "chalk": "^6.0.1",
+    "commander": "^15.0.0",
+    "env-paths": "^4.0.0",
+    "execa": "^10.2.1",
+    "fast-glob": "^3.3.3",
+    "ignore": "^7.0.14",
+    "minisearch": "^7.2.0",
+    "ora": "^9.4.1",
+    "simple-git": "^4.0.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@typescript/typescript6": "^6.0.2",
+    "oxlint": "^1.90.0",
+    "tsup": "^9.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}
