@@ -9,6 +9,22 @@ export interface RepositoryMetadata {
   version: number;
 }
 
+export interface ImportInfo {
+  moduleSpecifier: string;
+  namedImports: string[];
+  defaultImport?: string;
+  namespaceImport?: string;
+  startLine: number;
+  endLine: number;
+}
+
+export interface ExportInfo {
+  name: string;
+  type: 'default' | 'named' | 'namespace' | 'reexport';
+  startLine: number;
+  endLine: number;
+}
+
 export interface FileRecord {
   path: string;
   language: string;
@@ -16,6 +32,8 @@ export interface FileRecord {
   hash: string;
   lastModified: number;
   symbols: SymbolInfo[];
+  imports?: ImportInfo[];
+  exports?: ExportInfo[];
 }
 
 export interface SymbolInfo {
@@ -24,6 +42,7 @@ export interface SymbolInfo {
   startLine: number;
   endLine: number;
   signature?: string;
+  filePath?: string;
 }
 
 export interface CodeChunk {
@@ -91,6 +110,27 @@ export interface RetrievalResult {
   symbols: SymbolInfo[];
   commits: GitCommit[];
   files: FileRecord[];
+}
+
+export interface RepositoryIndexMetadata {
+  id: string;
+  rootPath: string;
+  name: string;
+  indexedAt: string;
+  headCommit: string;
+  totalFiles: number;
+  totalChunks: number;
+  totalSymbols: number;
+  totalCommits: number;
+  version: number;
+}
+
+export interface RepositoryIndex {
+  metadata: RepositoryIndexMetadata;
+  files: FileRecord[];
+  chunks: CodeChunk[];
+  symbols: SymbolInfo[];
+  commits: GitCommit[];
 }
 
 export interface RAGContext {

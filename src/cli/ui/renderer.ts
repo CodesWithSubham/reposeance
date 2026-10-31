@@ -35,7 +35,7 @@ export function printSection(title: string): void {
 
 export function renderAnswer(
   answer: string,
-  evidence: Array<{ type: 'source' | 'commit'; path?: string; startLine?: number; endLine?: number; commitHash?: string }>,
+  evidence: Array<{ type: 'source' | 'commit'; path?: string; startLine?: number | undefined; endLine?: number | undefined; commitHash?: string }>,
   confidence: 'high' | 'medium' | 'low',
 ): void {
   console.log();

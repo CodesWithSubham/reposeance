@@ -140,11 +140,15 @@ export function chunkText(
   filePath: string,
   language: string,
 ): CodeChunk[] {
+  const normalizedFilePath = normalizePath(filePath);
+  const effectiveChunkSize = Math.max(1, chunkSize);
+  const effectiveOverlap = Math.max(0, Math.min(overlap, effectiveChunkSize - 1));
+  const step = Math.max(1, effectiveChunkSize - effectiveOverlap);
   const lines = content.split('\n');
   const chunks: CodeChunk[] = [];
 
-  for (let i = 0; i < lines.length; i += chunkSize - overlap) {
-    const end = Math.min(i + chunkSize, lines.length);
+  for (let i = 0; i < lines.length; i += step) {
+    const end = Math.min(i + effectiveChunkSize, lines.length);
     const chunkLines = lines.slice(i, end);
     const chunkContent = chunkLines.join('\n');
 
@@ -152,7 +156,7 @@ export function chunkText(
 
     chunks.push({
       id: generateId('chunk'),
-      filePath,
+      filePath: normalizedFilePath,
       startLine: i + 1,
       endLine: end,
       content: chunkContent,

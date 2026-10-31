@@ -1,0 +1,39 @@
+---
+name: Feature Request
+description: Suggest an idea for RepoSeance
+title: "[FEATURE]: "
+labels: ["enhancement"]
+assignees: []
+---
+
+## Feature Description
+
+A clear and concise description of the feature you'd like to see.
+
+## Problem Statement
+
+What problem does this feature solve? Why is it needed?
+
+## Proposed Solution
+
+Describe your proposed solution. Include:
+- How it should work
+- CLI interface (if applicable)
+- Configuration options
+- Example usage
+
+## Alternatives Considered
+
+Describe any alternative solutions or features you've considered.
+
+## Use Cases
+
+Who would benefit from this feature? Provide specific scenarios.
+
+## Implementation Notes
+
+Any technical considerations, dependencies, or implementation approaches.
+
+## Additional Context
+
+Add any other context, mockups, or references here.

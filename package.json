@@ -3,18 +3,26 @@
   "version": "1.0.0",
   "description": "An open-source, local-first AI codebase archaeologist. Talk to the ghosts of your codebase.",
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "bin": {
-    "reposeance": "./dist/cli/program.js"
+    "reposeance": "./dist/program.js"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && tsc --emitDeclarationOnly --declaration --outDir dist",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
-    "prepublishOnly": "pnpm run build"
+    "prepublishOnly": "pnpm run typecheck && pnpm run test && pnpm run build"
   },
   "keywords": [
     "typescript",
@@ -28,8 +36,25 @@
     "git",
     "open-source"
   ],
-  "author": "",
+  "author": "Subham Duary <me@subhamduary.in> (https://github.com/CodesWithSubham)",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodesWithSubham/reposeance.git"
+  },
+  "homepage": "https://github.com/CodesWithSubham/reposeance#readme",
+  "bugs": {
+    "url": "https://github.com/CodesWithSubham/reposeance/issues"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "devEngines": {
     "packageManager": {
       "name": "pnpm",

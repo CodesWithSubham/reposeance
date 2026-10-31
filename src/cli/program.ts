@@ -86,9 +86,10 @@ async function main(): Promise<void> {
     const args = process.argv.slice(2);
     const isHelp = args.includes('-h') || args.includes('--help');
     const isVersion = args.includes('-V') || args.includes('--version');
+    const isJson = args.includes('--json');
     const isSubcommand = args.length > 0 && args[0] !== undefined && !args[0].startsWith('-');
 
-    if (!isHelp && !isVersion && isSubcommand) {
+    if (!isHelp && !isVersion && !isJson && isSubcommand) {
       printBanner();
     }
 

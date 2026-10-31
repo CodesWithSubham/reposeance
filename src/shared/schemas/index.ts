@@ -19,6 +19,22 @@ export const SymbolInfoSchema = z.object({
   signature: z.string().optional(),
 });
 
+export const ImportInfoSchema = z.object({
+  moduleSpecifier: z.string(),
+  namedImports: z.array(z.string()),
+  defaultImport: z.string().optional(),
+  namespaceImport: z.string().optional(),
+  startLine: z.number().int().positive(),
+  endLine: z.number().int().positive(),
+});
+
+export const ExportInfoSchema = z.object({
+  name: z.string(),
+  type: z.enum(['default', 'named', 'namespace', 'reexport']),
+  startLine: z.number().int().positive(),
+  endLine: z.number().int().positive(),
+});
+
 export const FileRecordSchema = z.object({
   path: z.string(),
   language: z.string(),
@@ -26,6 +42,8 @@ export const FileRecordSchema = z.object({
   hash: z.string(),
   lastModified: z.number().int().positive(),
   symbols: z.array(SymbolInfoSchema),
+  imports: z.array(ImportInfoSchema).default([]),
+  exports: z.array(ExportInfoSchema).default([]),
 });
 
 export const CodeChunkSchema = z.object({
@@ -161,6 +179,9 @@ export const IndexingConfigSchema = z.object({
     '.gitignore',
     '.gitattributes',
   ]),
+}).refine(data => data.chunkSize > data.chunkOverlap, {
+  message: 'chunkSize must be greater than chunkOverlap',
+  path: ['chunkOverlap'],
 });
 
 export const RetrievalConfigSchema = z.object({
@@ -189,6 +210,8 @@ export const ReposeanceConfigSchema = z.object({
 
 export type RepositoryMetadata = z.infer<typeof RepositoryMetadataSchema>;
 export type SymbolInfo = z.infer<typeof SymbolInfoSchema>;
+export type ImportInfo = z.infer<typeof ImportInfoSchema>;
+export type ExportInfo = z.infer<typeof ExportInfoSchema>;
 export type FileRecord = z.infer<typeof FileRecordSchema>;
 export type CodeChunk = z.infer<typeof CodeChunkSchema>;
 export type GitCommit = z.infer<typeof GitCommitSchema>;

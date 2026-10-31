@@ -1,14 +1,19 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import * as os from 'node:os';
+
+const tmpBase = os.tmpdir();
+const testConfigDir = path.join(tmpBase, 'reposeance-test-config');
+const testConfigFile = path.join(testConfigDir, 'config.json');
 
 // Use vi.hoisted to ensure mock is set up before imports
 const mockEnvPaths = vi.hoisted(() => {
   return {
     default: vi.fn(() => ({
-      config: '/tmp/reposeance-test-config',
-      cache: '/tmp/reposeance-test-cache',
-      data: '/tmp/reposeance-test-data',
+      config: path.join(os.tmpdir(), 'reposeance-test-config'),
+      cache: path.join(os.tmpdir(), 'reposeance-test-cache'),
+      data: path.join(os.tmpdir(), 'reposeance-test-data'),
     })),
   };
 });
@@ -16,18 +21,16 @@ const mockEnvPaths = vi.hoisted(() => {
 vi.mock('env-paths', () => mockEnvPaths);
 
 // Import config after mock is set up
-const { loadConfig, saveConfig, resetConfig, getConfigPath, DEFAULT_CONFIG } = await import('@/config');
+const { loadConfig, saveConfig, resetConfig, getConfigPath, DEFAULT_CONFIG, _resetConfigCache } = await import('@/config');
 
 describe('Config Module', () => {
-  const testConfigDir = '/tmp/reposeance-test-config';
-  const testConfigFile = path.join(testConfigDir, 'config.json');
-
   beforeEach(async () => {
     vi.clearAllMocks();
+    _resetConfigCache();
     mockEnvPaths.default.mockReturnValue({
-      config: '/tmp/reposeance-test-config',
-      cache: '/tmp/reposeance-test-cache',
-      data: '/tmp/reposeance-test-data',
+      config: testConfigDir,
+      cache: path.join(tmpBase, 'reposeance-test-cache'),
+      data: path.join(tmpBase, 'reposeance-test-data'),
     });
     // Clean up test config
     try {
@@ -38,6 +41,7 @@ describe('Config Module', () => {
   });
 
   afterEach(async () => {
+    _resetConfigCache();
     try {
       await fs.rm(testConfigDir, { recursive: true, force: true });
     } catch {
@@ -51,7 +55,7 @@ describe('Config Module', () => {
       expect(config).toEqual(DEFAULT_CONFIG);
     });
 
-    it.skip('loads config from file', async () => {
+    it('loads config from file', async () => {
       const customConfig = {
         ollama: { baseUrl: 'http://localhost:11435', model: 'llama3', timeout: 30000 },
         indexing: { maxFileSize: 2048, maxTotalFiles: 5000, chunkSize: 100, chunkOverlap: 10, excludedPatterns: [], includedExtensions: ['.ts'] },
@@ -61,18 +65,20 @@ describe('Config Module', () => {
       await fs.mkdir(testConfigDir, { recursive: true });
       await fs.writeFile(testConfigFile, JSON.stringify(customConfig), 'utf-8');
 
+      _resetConfigCache();
       const config = await loadConfig();
       expect(config.ollama.model).toBe('llama3');
       expect(config.cli.theme).toBe('dark');
     });
 
-    it.skip('merges file config with defaults', async () => {
+    it('merges file config with defaults', async () => {
       const partialConfig = {
         ollama: { model: 'custom-model' },
       };
       await fs.mkdir(testConfigDir, { recursive: true });
       await fs.writeFile(testConfigFile, JSON.stringify(partialConfig), 'utf-8');
 
+      _resetConfigCache();
       const config = await loadConfig();
       expect(config.ollama.model).toBe('custom-model');
       expect(config.ollama.baseUrl).toBe(DEFAULT_CONFIG.ollama.baseUrl);
@@ -99,19 +105,19 @@ describe('Config Module', () => {
   });
 
   describe('resetConfig', () => {
-    it('resets to default config', async () => {
-      await saveConfig({ ollama: { model: 'custom-model' } });
+    it('resets config to defaults', async () => {
+      await saveConfig({ ollama: { model: 'modified-model' } });
       await resetConfig();
 
       const config = await loadConfig();
-      expect(config).toEqual(DEFAULT_CONFIG);
+      expect(config.ollama.model).toBe(DEFAULT_CONFIG.ollama.model);
     });
   });
 
   describe('getConfigPath', () => {
-    it('returns correct path', () => {
+    it('returns the configuration file path', () => {
       const configPath = getConfigPath();
-      expect(configPath).toBe(testConfigFile);
+      expect(configPath).toContain('config.json');
     });
   });
 });

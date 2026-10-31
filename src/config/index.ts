@@ -99,8 +99,9 @@ export async function loadConfig(): Promise<ReposeanceConfig> {
   try {
     const configContent = await readFile(CONFIG_FILE, 'utf-8');
     const parsed = JSON.parse(configContent);
-    const validated = ReposeanceConfigSchema.parse(parsed);
-    cachedConfig = { ...DEFAULT_CONFIG, ...validated };
+    const merged = deepMerge(DEFAULT_CONFIG, parsed);
+    const validated = ReposeanceConfigSchema.parse(merged);
+    cachedConfig = validated;
     return cachedConfig;
   } catch (error) {
     const err = error as NodeJS.ErrnoException;
@@ -134,6 +135,10 @@ export async function resetConfig(): Promise<void> {
   } catch (error) {
     handleError(error);
   }
+}
+
+export function _resetConfigCache(): void {
+  cachedConfig = null;
 }
 
 export function getConfigPath(): string {

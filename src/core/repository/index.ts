@@ -1,8 +1,8 @@
 import { execa } from 'execa';
 import { resolve, basename } from 'node:path';
-import { createHash } from 'node:crypto';
 import { RepositoryError } from '../../shared/errors';
 import { RepositoryMetadata } from '../../shared/types';
+import { generateRepoId } from '../indexer';
 
 export interface RepositoryInfo {
   rootPath: string;
@@ -11,19 +11,14 @@ export interface RepositoryInfo {
 }
 
 export async function findGitRoot(startPath: string = process.cwd()): Promise<string | null> {
-  let currentPath = resolve(startPath);
-
-  while (true) {
-    try {
-      await execa('git', ['-C', currentPath, 'rev-parse', '--git-dir'], { stdout: 'ignore', stderr: 'ignore' });
-      return currentPath;
-    } catch {
-      const parentPath = resolve(currentPath, '..');
-      if (parentPath === currentPath) {
-        return null;
-      }
-      currentPath = parentPath;
-    }
+  try {
+    const { stdout } = await execa('git', ['-C', resolve(startPath), 'rev-parse', '--show-toplevel'], {
+      stdout: 'pipe',
+      stderr: 'ignore',
+    });
+    return resolve(stdout.trim());
+  } catch {
+    return null;
   }
 }
 
@@ -43,7 +38,7 @@ export async function getRepositoryInfo(path: string = process.cwd()): Promise<R
     let name = basename(gitRoot);
     if (remoteUrl) {
       const match = remoteUrl.match(/([^/]+?)(?:\.git)?$/);
-      if (match) name = match[1];
+      if (match && match[1]) name = match[1];
     }
 
     return {
@@ -89,8 +84,4 @@ export async function getRepositoryMetadata(rootPath: string): Promise<Partial<R
     headCommit,
     version: 1,
   };
-}
-
-function generateRepoId(rootPath: string): string {
-  return createHash('sha256').update(rootPath).digest('hex').substring(0, 16);
 }
