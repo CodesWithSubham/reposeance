@@ -36,7 +36,7 @@ Powered by local open-weight language models through Ollama, RepoSeance combines
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 22+
 - Git
 - [Ollama](https://ollama.com/) installed and running
 

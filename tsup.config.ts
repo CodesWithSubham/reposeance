@@ -4,7 +4,7 @@ export default defineConfig([
   {
     entry: { program: 'src/cli/program.ts' },
     format: ['esm'],
-    target: 'node20',
+    target: 'node22',
     platform: 'node',
     outDir: 'dist',
     clean: true,
@@ -32,7 +32,7 @@ export default defineConfig([
   {
     entry: { index: 'src/index.ts' },
     format: ['esm'],
-    target: 'node20',
+    target: 'node22',
     platform: 'node',
     outDir: 'dist',
     clean: false,
